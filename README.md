@@ -1,0 +1,1 @@
+# gin-nextjs-template
