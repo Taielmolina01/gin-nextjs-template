@@ -9,7 +9,8 @@ import (
 	authErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 	userRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
-	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/utils"
+	userUtils "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/utils"
+	authUtils "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/utils"
 	"time"
 )
 
@@ -51,11 +52,11 @@ func NewAuthService(authRepository authRepository.AuthRepository, userRepository
 func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLoginResponse, error) {
 	user, err := aui.userRepository.GetUser(req.Email)
 	if err != nil {
-		return "", ownErrors.ErrorUserNotExist{Email: req.Email}
+		return "", userErrors.ErrorUserNotExist{Email: req.Email}
 	}
 
-	if !utils.ValidatePassword(user.Password, req.Password) {
-		return "", ownErrors.ErrorWrongOldPassword{}
+	if !userUtils.ValidatePassword(user.Password, req.Password) {
+		return "", userErrors.ErrorWrongOldPassword{}
 	}
 
 	expiresAt := time.Now().Add(time.Hour * expiresHours)
@@ -68,12 +69,16 @@ func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLog
 	token := jwt.NewWithClaims(signingMethod, claims)
 	signedToken, err := token.SignedString(secretKey)
 	if err != nil {
-		return "", ownErrors.ErrorSigningToken{TypeError: err}
+		return "", authErrors.ErrorSigningToken{TypeError: err}
 	}
 
-	refreshtoken := 
+	refreshtoken, err := generateRefreshToken()
 
-	response := MapUserDBToLoginResponse(user, signedToken, refreshtoken)
+	if err != nil {
+		return nil, authErrors.ErrorGeneratingRefreshToken
+	}
+
+	response := authUtils.MapUserDBToLoginResponse(user, signedToken, refreshtoken)
 
 	return response, nil
 }
@@ -82,16 +87,24 @@ func (aui *AuthServiceImpl) Logout(userEmail string) (string, error) {
 	_, err := aui.userRepository.GetUser(userEmail)
 
 	if err != nil {
-		return "", ownErrors.ErrorUserNotExist{Email: userEmail}
+		return "", userErrors.ErrorUserNotExist{Email: userEmail}
 	}
 
-	token, err := aui.authRepository.GetToken(userEmail)
+    refreshToken := c.Request.Header.Get("Authorization")
 
-	if err != nil {
-		return "", ownErrors.ErrorUserTokenNotExist{UserEmail: userEmail}
-	}
+    if refreshToken == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
+        return
+    }
 
-	return "user logged succesfully", nil
+    // Delete or blacklist refresh token (if stored in DB)
+    err := aui.tokenRepository.DeleteRefreshToken(refreshToken)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to revoke token"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
 func generateRefreshToken() (string, error) {

@@ -27,7 +27,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := ac.AuthService.Login(&request)
+	response, err := ac.AuthService.Login(&request)
 
 	if err != nil {
 		if errors.Is(err, userErrors.ErrorUserNotExist{Email: request.Email}) {
@@ -39,6 +39,14 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 				"error": err.Error(),
 			})
 		}
+		return
+	}
+
+	session := sessions.Default(ctx)
+
+	session.Set(user.Email, response) 
+	if err2 := session.Save(); err2 != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 
@@ -69,6 +77,15 @@ func (ac *AuthController) Logout(ctx *gin.Context) {
 		return
 	}
 
+	session := sessions.Default(ctx)
+
+	session.Delete(email)
+
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
+	
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": token,
 	})

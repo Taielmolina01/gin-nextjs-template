@@ -2,6 +2,7 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"github.com/google/uuid"
 )
 
 type Role string
@@ -48,10 +49,18 @@ type UserUpdatePasswordRequest struct {
 }
 
 type UserDB struct {
-	Email    string `gorm:"type:varchar(100);primaryKey"`
+	ID	uuid.UUID `gorm:"type:uuid;primaryKey"`
+	Email    string `gorm:"type:varchar(100);unique"`
 	FirstName string `gorm:"type:varchar(50);not null`
 	LastName     string `gorm:"type:varchar(50);not null"`
 	Password string `gorm:"type:varchar(100);not null" validate:"required,min=8"`
 	Role     Role   `gorm:"type:varchar(30);default:user`
 	gorm.Model
+}
+
+type UserCRUDResponse struct {
+	Email	string	`json:"email"`
+	FirstName	string	`json:"firstname"`
+	LastName	string	`json:"lastname"`
+	Role	Role	`json:"role"`
 }

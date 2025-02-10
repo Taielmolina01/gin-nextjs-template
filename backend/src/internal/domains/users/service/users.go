@@ -17,7 +17,7 @@ func NewUserServiceImpl(userRepository repository.UserRepository) UserService {
 	return &UserServiceImpl{UserRepository: userRepository}
 }
 
-func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserDB, error) {
+func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserCRUDResponse, error) {
 
 	if req.Role == "" {
 		req.Role = "user"
@@ -51,12 +51,12 @@ func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserDB, 
 	return us.UserRepository.CreateUser(newUser)
 }
 
-func (us *UserServiceImpl) GetUser(email string) (*models.UserDB, error) {
+func (us *UserServiceImpl) GetUser(email string) (*models.UserCRUDResponse, error) {
 	// Get user from the db
 	return us.UserRepository.GetUser(email)
 }
 
-func (us *UserServiceImpl) UpdateUser(email string, req *models.UserUpdateRequest) (*models.UserDB, error) {
+func (us *UserServiceImpl) UpdateUser(email string, req *models.UserUpdateRequest) (*models.UserCRUDResponse, error) {
 	// Get user from the db
 	user, err := us.GetUser(email)
 
@@ -72,7 +72,7 @@ func (us *UserServiceImpl) UpdateUser(email string, req *models.UserUpdateReques
 	return us.UserRepository.UpdateUser(user)
 }
 
-func (us *UserServiceImpl) UpdateUserPassword(email string, req *models.UserUpdatePasswordRequest) (*models.UserDB, error) {
+func (us *UserServiceImpl) UpdateUserPassword(email string, req *models.UserUpdatePasswordRequest) (*models.UserCRUDResponse, error) {
 	// Get user from the db
 	user, err := us.GetUser(email)
 
@@ -96,7 +96,7 @@ func (us *UserServiceImpl) UpdateUserPassword(email string, req *models.UserUpda
 	return us.UserRepository.UpdateUser(user)
 }
 
-func (us *UserServiceImpl) DeleteUser(email string) (*models.UserDB, error) {
+func (us *UserServiceImpl) DeleteUser(email string) (*models.UserCRUDResponse, error) {
 	// Get user from the db
 	user, err := us.GetUser(email)
 

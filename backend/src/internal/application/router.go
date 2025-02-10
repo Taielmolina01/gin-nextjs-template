@@ -13,6 +13,8 @@ import (
 	authService "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
 	userService "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/service"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/middlewares"
+	"github.com/gin-contrib/sessions"
+  	"github.com/gin-contrib/sessions/postgres"
 )
 
 type Router struct {
@@ -29,6 +31,10 @@ func CreateRouter(port string) *Router {
 	config := LoadConfig()
 
 	db := ConnectDB(config)
+
+	store, err := postgres.NewStore(db, []byte(config.secretKey))
+
+	engine.Use(sessions.Sessions("session", store))
 
 	createEndPoints(db)
 

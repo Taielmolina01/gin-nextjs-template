@@ -5,13 +5,13 @@ import (
 )
 
 type UserService interface {
-	CreateUser(*models.UserRequest) (*models.UserDB, error)
+	CreateUser(*models.UserRequest) (*models.UserCRUDResponse, error)
 
-	GetUser(string) (*models.UserDB, error)
+	GetUser(string) (*models.UserCRUDResponse, error)
 
-	UpdateUser(string, *models.UserUpdateRequest) (*models.UserDB, error)
+	UpdateUser(string, *models.UserUpdateRequest) (*models.UserCRUDResponse, error)
 
-	UpdateUserPassword(string, *models.UserUpdatePasswordRequest) (*models.UserDB, error)
+	UpdateUserPassword(string, *models.UserUpdatePasswordRequest) (*models.UserCRUDResponse, error)
 
-	DeleteUser(string) (*models.UserDB, error)
+	DeleteUser(string) (*models.UserCRUDResponse, error)
 }
