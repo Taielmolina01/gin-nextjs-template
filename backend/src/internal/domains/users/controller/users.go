@@ -2,15 +2,15 @@ package controller
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	userErrors 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/service"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserController struct {
-	UserService user.UserService
+	UserService service.UserService
 }
 
 func NewUserController(userService service.UserService) *UserController {

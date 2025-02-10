@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"net/http"
-	"testing"
-	"fmt"
-	"strings"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+	"testing"
 )
 
 // Tests of user's creations
@@ -84,7 +84,6 @@ func TestCreateUserWithoutLastName(t *testing.T) {
 		t.Errorf("Expected body %s but got %s", expected, recorder.Body.String())
 	}
 }
-
 
 func TestCreateUserWithoutPassword(t *testing.T) {
 	t.Log("Try to create an user without password")
@@ -205,10 +204,10 @@ func TestUpdateUserWithoutName(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)
@@ -217,7 +216,7 @@ func TestUpdateUserWithoutName(t *testing.T) {
 
 	req, _ := http.NewRequest("PUT", fmt.Sprintf("/users/%s", user.Email), strings.NewReader(secondJsonBody))
 	req.Header.Set("Authorization", "Bearer "+accessToken)
-	
+
 	secondRecorder := PerformRequestWithRequest(t, router, req)
 
 	if secondRecorder.Code != http.StatusBadRequest {
@@ -234,10 +233,10 @@ func TestUpdateUserWithoutRole(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)
@@ -246,7 +245,7 @@ func TestUpdateUserWithoutRole(t *testing.T) {
 
 	req, _ := http.NewRequest("PUT", fmt.Sprintf("/users/%s", user.Email), strings.NewReader(jsonBody))
 	req.Header.Set("Authorization", "Bearer "+accessToken)
-	
+
 	recorder := PerformRequestWithRequest(t, router, req)
 
 	if recorder.Code != http.StatusBadRequest {
@@ -278,10 +277,10 @@ func TestUpdateUserWithValidNameAndRole(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)
@@ -344,10 +343,10 @@ func TestUpdateUserPasswordWithInvalidOldPassword(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)
@@ -368,10 +367,10 @@ func TestUpdateUserPasswordWithLengthLessThanEight(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)
@@ -392,10 +391,10 @@ func TestUpdateUserPasswordWithValidPassword(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)
@@ -435,10 +434,10 @@ func TestDeleteAnExistentUser(t *testing.T) {
 	router := UseRouter(t)
 
 	user := UserLoginData{
-		Name:	"John Doe",
-		Email:	"johndoe@gmail.com",
-		Password:	"myPassword",
-		Role:	"user",
+		Name:     "John Doe",
+		Email:    "johndoe@gmail.com",
+		Password: "myPassword",
+		Role:     "user",
 	}
 
 	accessToken := CreateUserAndLogin(user, t, router)

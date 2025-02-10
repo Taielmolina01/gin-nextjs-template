@@ -20,8 +20,14 @@ func (e ErrorSigningToken) Error() string {
 	return fmt.Sprintf("Error signing token: %w", e.TypeError)
 }
 
-type ErrorGeneratingRefreshToken struct {}
+type ErrorGeneratingRefreshToken struct{}
 
 func (e ErrorGeneratingRefreshToken) Error() string {
 	return "Error generating the refresh token"
+}
+
+type ErrorTokenIsRequired struct{}
+
+func (e ErrorTokenIsRequired) Error() string {
+	return "Token is required"
 }

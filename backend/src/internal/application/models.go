@@ -1,4 +1,4 @@
-package application 
+package application
 
 import (
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"

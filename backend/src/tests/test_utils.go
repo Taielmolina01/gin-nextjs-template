@@ -1,18 +1,18 @@
 package tests
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/application"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"movie-reservation-system/configuration"
 	"movie-reservation-system/initializers"
-	"github.com/Taielmolina01/gin-nextjs-template/src/internal/application"
 	"net/http"
 	"net/http/httptest"
-	"bytes"
 	"testing"
-	"encoding/json"
-	"movie-reservation-system/configuration"
 )
 
 func setUpRouterTest() (*gin.Engine, error) {
@@ -69,11 +69,10 @@ func PerformRequest(t *testing.T, engine *gin.Engine, method, path, body string)
 }
 
 func PerformRequestWithRequest(t *testing.T, engine *gin.Engine, req *http.Request) *httptest.ResponseRecorder {
-    recorder := httptest.NewRecorder()
-    engine.ServeHTTP(recorder, req)
-    return recorder
+	recorder := httptest.NewRecorder()
+	engine.ServeHTTP(recorder, req)
+	return recorder
 }
-
 
 func GetAccessToken(recorder *httptest.ResponseRecorder) (string, error) {
 	var responseBody models.TokenResponse
@@ -86,11 +85,11 @@ func GetAccessToken(recorder *httptest.ResponseRecorder) (string, error) {
 }
 
 type UserLoginData struct {
-	FirstName	string
-	LastName	string
-	Email	string
-	Password	string
-	Role	string
+	FirstName string
+	LastName  string
+	Email     string
+	Password  string
+	Role      string
 }
 
 func CreateUserAndLogin(userData UserLoginData, t *testing.T, engine *gin.Engine) string {

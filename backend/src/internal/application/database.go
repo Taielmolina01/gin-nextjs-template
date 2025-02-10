@@ -16,11 +16,11 @@ const (
 	MESSAGE_SUCCESS_CREATING_DB     = "Success creating the database"
 	MESSAGE_SUCCESS_CREATING_TABLES = "Success creating all the tables of the database"
 	MESSAGE_ERROR_CREATING_TABLE    = "Error creating table: %w"
-	DATABASE_NAME                   = "movie_reservation_system_db"
+	DATABASE_NAME                   = "db-gin-template"
 )
 
 func ConnectDB(config *Configuration) (*gorm.DB, error) {
-	dsn := config.DbDsn + " dbname=postgres"
+	dsn := config.DbDsn
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
@@ -65,7 +65,7 @@ func createDatabaseIfNotExist(dsn string) {
 		return
 	}
 
-	err = conn.Exec(fmt.Sprintf("CREATE DATABASE %s", DATABASE_NAME)).Error
+	err = conn.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, DATABASE_NAME)).Error
 	if err != nil {
 		fmt.Println(MESSAGE_ERROR_CREATING_DB, err)
 	} else {

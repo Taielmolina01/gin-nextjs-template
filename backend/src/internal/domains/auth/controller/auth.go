@@ -2,10 +2,12 @@ package controller
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
+	authErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/errors"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
 	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
-	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -44,14 +46,14 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 
 	session := sessions.Default(ctx)
 
-	session.Set(user.Email, response) 
+	session.Set(response.Email, response)
 	if err2 := session.Save(); err2 != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"access_token": token,
+		"user": response,
 	})
 }
 
@@ -65,7 +67,7 @@ func (ac *AuthController) Logout(ctx *gin.Context) {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
-		} else if errors.Is(err, userErrors.ErrorUserTokenNotExist{UserEmail: email}) {
+		} else if errors.Is(err, authErrors.ErrorUserTokenNotExist{UserEmail: email}) {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": err.Error(),
 			})
@@ -82,10 +84,10 @@ func (ac *AuthController) Logout(ctx *gin.Context) {
 	session.Delete(email)
 
 	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": token,
 	})

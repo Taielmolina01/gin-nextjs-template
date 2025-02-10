@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
+	"golang.org/x/crypto/bcrypt"
 	"reflect"
 	"strings"
 )
@@ -100,10 +100,10 @@ func ValidatePassword(storedPassword string, enteredPassword string) bool {
 
 func MapUserRequestToUserDB(req *models.UserRequest) *models.UserDB {
 	return &models.UserDB{
-		Email:    req.Email,
+		Email:     req.Email,
 		FirstName: req.FirstName,
-		LastName: req.LastName,
-		Password: req.Password,
-		Role:     req.Role,
+		LastName:  req.LastName,
+		Password:  req.Password,
+		Role:      req.Role,
 	}
 }

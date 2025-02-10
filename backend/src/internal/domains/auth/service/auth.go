@@ -2,15 +2,15 @@ package service
 
 import (
 	"encoding/base64"
-	"github.com/golang-jwt/jwt/v5"
-	"log"
-	"math/rand"
-	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	authErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/errors"
+	authUtils "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/utils"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 	userRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
 	userUtils "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/utils"
-	authUtils "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/utils"
+	"github.com/golang-jwt/jwt/v5"
+	"log"
+	"math/rand"
 	"time"
 )
 
@@ -47,15 +47,14 @@ func NewAuthService(userRepository userRepository.UserRepository, algorithm, sec
 	}
 }
 
-
 func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLogResponse, error) {
 	user, err := aui.userRepository.GetUser(req.Email)
 	if err != nil {
-		return "", userErrors.ErrorUserNotExist{Email: req.Email}
+		return nil, userErrors.ErrorUserNotExist{Email: req.Email}
 	}
 
 	if !userUtils.ValidatePassword(user.Password, req.Password) {
-		return "", userErrors.ErrorWrongOldPassword{}
+		return nil, userErrors.ErrorWrongOldPassword{}
 	}
 
 	expiresAt := time.Now().Add(time.Hour * expiresHours)
@@ -68,13 +67,13 @@ func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLog
 	token := jwt.NewWithClaims(signingMethod, claims)
 	signedToken, err := token.SignedString(secretKey)
 	if err != nil {
-		return "", authErrors.ErrorSigningToken{TypeError: err}
+		return nil, authErrors.ErrorSigningToken{TypeError: err}
 	}
 
 	refreshtoken, err := generateRefreshToken()
 
 	if err != nil {
-		return nil, authErrors.ErrorGeneratingRefreshToken
+		return nil, authErrors.ErrorGeneratingRefreshToken{}
 	}
 
 	response := authUtils.MapUserDBToLogResponse(user, signedToken, refreshtoken)
@@ -82,19 +81,15 @@ func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLog
 	return response, nil
 }
 
-func (aui *AuthServiceImpl) Logout(userEmail string) (UserLogResponse, error) {
+func (aui *AuthServiceImpl) Logout(userEmail string) (*models.UserLogResponse, error) {
 	user, err := aui.userRepository.GetUser(userEmail)
 
 	if err != nil {
-		return "", userErrors.ErrorUserNotExist{Email: userEmail}
+		return nil, userErrors.ErrorUserNotExist{Email: userEmail}
 	}
 
-    if refreshToken == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
-        return
-    }
-
-	return MapUserDBToLogResponse(user), nil
+	return authUtils.MapUserDBToLogResponse(user, "", ""), nil
+	// deberia pasarle los tokens, medio q si me deslogeo no se pa q los quiero pero bueno
 }
 
 func generateRefreshToken() (string, error) {

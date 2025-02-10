@@ -15,8 +15,8 @@ const (
 type Configuration struct {
 	Port         string
 	DbDsn        string
-	JwtAlgorithm string
-	JwtSecretKey    string
+	JWTAlgorithm string
+	JWTSecretKey string
 }
 
 var config *Configuration
@@ -36,18 +36,18 @@ func LoadConfig() *Configuration {
 	config = &Configuration{
 		Port:         os.Getenv("PORT"),
 		DbDsn:        os.Getenv("DB_DSN"),
-		JwtAlgorithm: os.Getenv("JWT_ALGORITHM"),
-		JwtSecretKey:    os.Getenv("JWT_SECRET"),
+		JWTAlgorithm: os.Getenv("JWT_ALGORITHM"),
+		JWTSecretKey: os.Getenv("JWT_SECRET"),
 	}
 	return config
 }
 
 func LoadConfigTest(port, dbDsn, jwtAlgorithm, jwtSecretKey string) *Configuration {
 	config = &Configuration{
-		Port: port,
-		DbDsn: dbDsn,
-		JwtAlgorithm: jwtAlgorithm,
-		JwtSecretKey: jwtSecretKey,
+		Port:         port,
+		DbDsn:        dbDsn,
+		JWTAlgorithm: jwtAlgorithm,
+		JWTSecretKey: jwtSecretKey,
 	}
 	return config
 }

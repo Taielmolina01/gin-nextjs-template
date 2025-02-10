@@ -117,7 +117,7 @@ func TestLogoutWithANotLoggedUser(t *testing.T) {
 		t.Errorf("Expected status code %d but got %d", http.StatusUnauthorized, secondRecorder.Code)
 	}
 
-	expected := `{"error":"Missing authentication token"}` 
+	expected := `{"error":"Missing authentication token"}`
 	if secondRecorder.Body.String() != expected {
 		t.Errorf("Expected body %s but got %s", expected, secondRecorder.Body.String())
 	}
@@ -152,11 +152,10 @@ func TestLogoutWithALoggedUser(t *testing.T) {
 
 	req, _ := http.NewRequest("POST", "/logout/johndoe@gmail.com", nil)
 	req.Header.Set("Authorization", "Bearer "+accessToken)
-	
+
 	thirdRecorder := PerformRequestWithRequest(t, router, req)
 
 	if thirdRecorder.Code != http.StatusOK {
 		t.Errorf("Expected status code %d but got %d", http.StatusOK, thirdRecorder.Code)
 	}
 }
-

@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
-	"golang.org/x/crypto/bcrypt"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/utils"
-	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceImpl struct {
@@ -19,10 +19,10 @@ func NewUserServiceImpl(UserRepository repository.UserRepository) UserService {
 
 func mapUserDBToUserCRUDResponse(user *models.UserDB) *models.UserCRUDResponse {
 	return &models.UserCRUDResponse{
-		Email: user.Email,
+		Email:     user.Email,
 		FirstName: user.FirstName,
-		LastName: user.LastName,
-		Role: user.Role,
+		LastName:  user.LastName,
+		Role:      user.Role,
 	}
 }
 
@@ -61,7 +61,7 @@ func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserCRUD
 	if err2 != nil {
 		return nil, err2
 	}
-	
+
 	return mapUserDBToUserCRUDResponse(savedUser), nil
 }
 

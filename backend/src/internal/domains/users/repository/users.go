@@ -2,9 +2,9 @@ package repository
 
 import (
 	"errors"
-	"gorm.io/gorm"
-	userErrors 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
+	"gorm.io/gorm"
 )
 
 type UserRepositoryImpl struct {

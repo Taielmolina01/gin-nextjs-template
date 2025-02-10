@@ -1,8 +1,8 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Role string
@@ -17,11 +17,11 @@ func GetRoles() []string {
 }
 
 type UserRequest struct {
-	Email    string `json:"email" binding:"required,email"`
-	FirstName string `json:"firstname" binding:"required"`	
+	Email     string `json:"email" binding:"required,email"`
+	FirstName string `json:"firstname" binding:"required"`
 	LastName  string `json:"lastname" binding:"required"`
-	Password string `json:"password" binding:"required,min=8"`
-	Role     Role   `json:"role" binding:"omitempty,oneof=user admin"`
+	Password  string `json:"password" binding:"required,min=8"`
+	Role      Role   `json:"role" binding:"omitempty,oneof=user admin"`
 }
 
 type UserLoginRequest struct {
@@ -30,18 +30,18 @@ type UserLoginRequest struct {
 }
 
 type UserLogResponse struct {
-	Email    string `json:"email"`
-	FirstName string `json:"firstname"`	
-	LastName  string `json:"lastname"`
-	Role     Role   `json:"role"`
-	Token string `json:"token"`
+	Email        string `json:"email"`
+	FirstName    string `json:"firstname"`
+	LastName     string `json:"lastname"`
+	Role         Role   `json:"role"`
+	Token        string `json:"token"`
 	RefreshToken string `json:"refreshtoken"`
 }
 
 type UserUpdateRequest struct {
 	FirstName *string `json:"firstname" binding:"omitempty"`
-	LastName *string `json:"lastname" binding:"omitempty"`
-	Role *Role   `json:"role" binding:"omitempty,oneof=user admin"`
+	LastName  *string `json:"lastname" binding:"omitempty"`
+	Role      *Role   `json:"role" binding:"omitempty,oneof=user admin"`
 }
 
 type UserUpdatePasswordRequest struct {
@@ -50,18 +50,18 @@ type UserUpdatePasswordRequest struct {
 }
 
 type UserDB struct {
-	ID	uuid.UUID `gorm:"type:uuid;primaryKey"`
-	Email    string `gorm:"type:varchar(100);unique"`
-	FirstName string `gorm:"type:varchar(50);not null`
-	LastName     string `gorm:"type:varchar(50);not null"`
-	Password string `gorm:"type:varchar(100);not null" validate:"required,min=8"`
-	Role     Role   `gorm:"type:varchar(30);default:user`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
+	Email     string    `gorm:"type:varchar(100);unique"`
+	FirstName string    `gorm:"type:varchar(50);not null`
+	LastName  string    `gorm:"type:varchar(50);not null"`
+	Password  string    `gorm:"type:varchar(100);not null" validate:"required,min=8"`
+	Role      Role      `gorm:"type:varchar(30);default:user`
 	gorm.Model
 }
 
 type UserCRUDResponse struct {
-	Email	string	`json:"email"`
-	FirstName	string	`json:"firstname"`
-	LastName	string	`json:"lastname"`
-	Role	Role	`json:"role"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Role      Role   `json:"role"`
 }

@@ -38,7 +38,6 @@ func (e ErrorUserMustHaveLastName) Error() string {
 	return "User must have a last name"
 }
 
-
 type ErrorPasswordMustHaveLenght8 struct{}
 
 func (e ErrorPasswordMustHaveLenght8) Error() string {
