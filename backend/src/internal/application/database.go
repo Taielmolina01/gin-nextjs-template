@@ -36,18 +36,6 @@ func ConnectDB(config *Configuration) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	tables := GetAllModels()
-
-	for _, t := range tables {
-		err = db.AutoMigrate(t)
-
-		if err != nil {
-			return nil, fmt.Errorf(MESSAGE_ERROR_CREATING_TABLE, err)
-		}
-	}
-
-	fmt.Println(MESSAGE_SUCCESS_CREATING_TABLES)
-
 	return db, nil
 }
 
@@ -70,5 +58,17 @@ func createDatabaseIfNotExist(dsn string) {
 		fmt.Println(MESSAGE_ERROR_CREATING_DB, err)
 	} else {
 		fmt.Println(MESSAGE_SUCCESS_CREATING_DB)
+
+		tables := GetAllModels()
+
+		for _, t := range tables {
+			err = db.AutoMigrate(t)
+	
+			if err != nil {
+				fmt.Errorf(MESSAGE_ERROR_CREATING_TABLE, err)
+			}
+		}
+	
+		fmt.Println(MESSAGE_SUCCESS_CREATING_TABLES)
 	}
 }
