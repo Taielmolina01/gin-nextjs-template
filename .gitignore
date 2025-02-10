@@ -4,3 +4,4 @@
 *.test
 /bin/
 /obj/
+node_modules/
