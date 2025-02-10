@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"gorm.io/gorm"
-	ownErrors "movie-reservation-system/errors"
-	"movie-reservation-system/models"
+	userErrors 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 )
 
 type UserRepositoryImpl struct {
@@ -31,7 +31,7 @@ func (ur *UserRepositoryImpl) GetUser(email string) (*models.UserDB, error) {
 	result := ur.db.First(user, "email = ?", email)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, ownErrors.ErrorUserNotExist{Email: email}
+		return nil, userErrors.ErrorUserNotExist{Email: email}
 	}
 
 	if result.Error != nil {

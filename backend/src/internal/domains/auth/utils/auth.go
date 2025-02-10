@@ -10,6 +10,6 @@ func MapUserDBToLoginResponse(user *models.UserDB, token string) *models.UserLog
 		FirstName: user.FirstName,
 		LastName: user.LastName,
 		Role: user.Role,
-		Token: token
+		Token: token,
 	}
 }

@@ -11,4 +11,4 @@ This is a template using **Gin** + **PostgresSQL** (with Gorm) + **NextJS** (rea
 
 - Users management
 - JWT Authentication (with admind & user roles)
-- Dashboard to see all users
+- Admin dashboard to see all users

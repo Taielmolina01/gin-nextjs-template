@@ -34,8 +34,12 @@ func ValidateUserFields(req *models.UserRequest) error {
 		return errors.ErrorUserMustHaveEmail{}
 	}
 
-	if req.Name == "" {
-		return errors.ErrorUserMustHaveName{}
+	if req.FirstName == "" {
+		return errors.ErrorUserMustHaveFirstName{}
+	}
+
+	if req.LastName == "" {
+		return errrors.ErrorUserMustHaveLastName{}
 	}
 
 	if len(req.Password) < 8 {
@@ -53,8 +57,12 @@ func ValidateAndUpdateUser(req *models.UserUpdateRequest, user *models.UserDB) e
 	trimStructFields(req)
 
 	// Validate fields
-	if req.Name != nil && *req.Name == "" {
-		return errors.ErrorUserMustHaveName{}
+	if req.FirstName != nil && *req.FirstName == "" {
+		return errors.ErrorUserMustHaveFirstName{}
+	}
+
+	if req.LastName != nil && *req.LastName == "" {
+		return errors.ErrorUserMustHaveLastName{}
 	}
 
 	if req.Role != nil && !Contains(models.GetRoles(), string(*req.Role)) {
@@ -62,8 +70,12 @@ func ValidateAndUpdateUser(req *models.UserUpdateRequest, user *models.UserDB) e
 	}
 
 	// Update fileds
-	if req.Name != nil {
-		user.Name = *req.Name
+	if req.FirstName != nil {
+		user.FirstName = *req.FirstName
+	}
+
+	if req.LastName != nil {
+		user.LastName = *req.LastName
 	}
 
 	if req.Role != nil {
@@ -89,7 +101,8 @@ func ValidatePassword(storedPassword string, enteredPassword string) bool {
 func MapUserRequestToUserDB(req *models.UserRequest) *models.UserDB {
 	return &models.UserDB{
 		Email:    req.Email,
-		Name:     req.Name,
+		FirstName: req.FirstName,
+		LastName: req.LastName,
 		Password: req.Password,
 		Role:     req.Role,
 	}

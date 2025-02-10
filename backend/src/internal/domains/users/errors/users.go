@@ -26,11 +26,18 @@ func (e ErrorUserMustHaveEmail) Error() string {
 	return "User must have an email"
 }
 
-type ErrorUserMustHaveName struct{}
+type ErrorUserMustHaveFirstName struct{}
 
-func (e ErrorUserMustHaveName) Error() string {
-	return "User must have a name"
+func (e ErrorUserMustHaveFirstName) Error() string {
+	return "User must have a first name"
 }
+
+type ErrorUserMustHaveLastName struct{}
+
+func (e ErrorUserMustHaveLastName) Error() string {
+	return "User must have a last name"
+}
+
 
 type ErrorPasswordMustHaveLenght8 struct{}
 

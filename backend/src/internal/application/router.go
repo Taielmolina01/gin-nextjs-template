@@ -4,42 +4,66 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	authController "movie-reservation-system/controller"
-	userController "movie-reservation-system/controller"
-	authRepository "movie-reservation-system/repository/auth"
-	userRepository "movie-reservation-system/repository/user"
-	authService "movie-reservation-system/service/auth"
-	userService "movie-reservation-system/service/user"
-	"movie-reservation-system/infrastructure/middleware"
-	"movie-reservation-system/configuration"
+	"fmt"
+	"log"
+	authController "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/controller"
+	userController "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/controller"
+	authRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/repository"
+	userRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
+	authService "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
+	userService "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/service"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/middlewares"
 )
 
-func Init(db *gorm.DB, config *configuration.Configuration) *gin.Engine {
-
-	userRepo := userRepository.CreateRepositoryImpl(db)
-
-	userController := setUpUserLayers(db, userRepo)
-	authController := setUpAuthLayers(db, userRepo, config)
-
-	router := gin.Default()
-
-	addCorsConfiguration(router)
-
-	setUpUserRoutes(router, db, userController)
-	setUpAuthRoutes(router, db, authController)
-
-	return router
+type Router struct {
+	Engine *gin.Engine
+	Port	string
 }
 
-func setUpUserLayers(db *gorm.DB, userRepo userRepository.UserRepository) *userController.UserController {
+
+func CreateRouter(port string) *Router {
+
+	engine := gin.Default()
+	addCorsConfiguration(engine)
+
+	config := LoadConfig()
+
+	db := ConnectDB(config)
+
+	createEndPoints(db)
+
+	return &Router{
+		engine: engine,
+		port: config.Port,
+	}
+}
+
+func (router *Router) Run() {
+	fmt.Println("Server is running on", router.port)
+	if err := router.engine.Run(r.port); err != nil {
+		log.Fatalln("Error running server: ", err)
+	}
+}
+
+func createEndPoints(db *gorm.DB) {
+	userController, userRepo := setUpUserLayers(db)
+	authController := setUpAuthLayers(db, userRepo, config)
+
+	setUpUserRoutes(engine, db, userController)
+	setUpAuthRoutes(engine, db, authController)
+}
+
+func setUpUserLayers(db *gorm.DB) (*userController.UserController, userRepository.UserRepository) {
+	userRepo := userRepository.CreateRepositoryImpl(db)
+
 	userService := userService.NewUserServiceImpl(userRepo)
 
 	userController := userController.NewUserController(userService)
 
-	return userController
+	return userController, userRepo
 }
 
-func setUpAuthLayers(db *gorm.DB, userRepo userRepository.UserRepository, config *configuration.Configuration) *authController.AuthController {
+func setUpAuthLayers(db *gorm.DB, userRepo userRepository.UserRepository, config *Configuration) *authController.AuthController {
 	authRepo := authRepository.NewAuthRepositoryImpl(db)
 
 	authService := authService.NewAuthService(authRepo, userRepo, config.JwtAlgorithm, config.JwtSecretKey)
@@ -49,7 +73,7 @@ func setUpAuthLayers(db *gorm.DB, userRepo userRepository.UserRepository, config
 	return authController
 }
 
-func addCorsConfiguration(router *gin.Engine) {
+func addCorsConfiguration(engine *gin.Engine) {
 	config := cors.DefaultConfig()
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
@@ -58,18 +82,18 @@ func addCorsConfiguration(router *gin.Engine) {
 	router.Use(cors.New(config))
 }
 
-func setUpUserRoutes(router *gin.Engine, db *gorm.DB, userController *userController.UserController) {
+func setUpUserRoutes(engine *gin.Engine, db *gorm.DB, userController *userController.UserController) {
 	usersGroup := router.Group("/users")
 	{
 		usersGroup.POST("", userController.CreateUser)
 		usersGroup.GET("/:email", userController.GetUser)
-		usersGroup.PUT("/:email", middleware.AuthMiddleware(db), userController.UpdateUser)
-		usersGroup.PUT("/:email/password", middleware.AuthMiddleware(db),userController.UpdateUserPassword)
-		usersGroup.DELETE("/:email", middleware.AuthMiddleware(db),userController.DeleteUser)
+		usersGroup.PUT("/:email", middlewares.PublicAuthMiddleware(db), userController.UpdateUser)
+		usersGroup.PUT("/:email/password", middlewares.PublicAuthMiddleware(db),userController.UpdateUserPassword)
+		usersGroup.DELETE("/:email", middlewares.PublicAuthMiddleware(db),userController.DeleteUser)
 	}
 }
 
-func setUpAuthRoutes(router *gin.Engine, db *gorm.DB, authController *authController.AuthController) {
+func setUpAuthRoutes(engine *gin.Engine, db *gorm.DB, authController *authController.AuthController) {
 	router.POST("/login", authController.Login)
-	router.POST("/logout/:email", middleware.AuthMiddleware(db), authController.Logout)
+	router.POST("/logout/:email", middlewares.PublicAuthMiddleware(db), authController.Logout)
 }

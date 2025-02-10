@@ -1,7 +1,7 @@
 package service
 
 import (
-	"movie-reservation-system/models"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 )
 
 type UserService interface {

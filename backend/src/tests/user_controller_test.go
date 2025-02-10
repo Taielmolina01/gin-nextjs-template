@@ -14,7 +14,7 @@ func TestCreateUserWithoutEmail(t *testing.T) {
 	t.Log("Try to create an user without email")
 	router := UseRouter(t)
 
-	jsonBody := `{"Name": "John Doe", "Email": "", "Password": "password123", "Role": "user"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "Email": "", "Password": "password123", "Role": "user"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -33,7 +33,7 @@ func TestCreateUserWithInvalidEmail(t *testing.T) {
 
 	router := UseRouter(t)
 
-	jsonBody := `{"Name": "John Doe", "Email": "invalid-email", "Password": "password123", "Role": "user"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "Email": "invalid-email", "Password": "password123", "Role": "user"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -47,12 +47,12 @@ func TestCreateUserWithInvalidEmail(t *testing.T) {
 	}
 }
 
-func TestCreateUserWithoutName(t *testing.T) {
+func TestCreateUserWithoutFirstName(t *testing.T) {
 	t.Log("Try to create an user without name")
 
 	router := UseRouter(t)
 
-	jsonBody := `{"Name": "", "Email": "johndoe@gmail.com", "Password": "password123", "Role": "user"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "Email": "johndoe@gmail.com", "Password": "password123", "Role": "user"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -60,18 +60,38 @@ func TestCreateUserWithoutName(t *testing.T) {
 		t.Errorf("Expected status code %d but got %d", http.StatusBadRequest, recorder.Code)
 	}
 
-	expected := `{"error":"Invalid request body: Key: 'UserRequest.Name' Error:Field validation for 'Name' failed on the 'required' tag"}`
+	expected := `{"error":"Invalid request body: Key: 'UserRequest.FirstName' Error:Field validation for 'FirstName' failed on the 'required' tag"}`
 	if recorder.Body.String() != expected {
 		t.Errorf("Expected body %s but got %s", expected, recorder.Body.String())
 	}
 }
+
+func TestCreateUserWithoutLastName(t *testing.T) {
+	t.Log("Try to create an user without name")
+
+	router := UseRouter(t)
+
+	jsonBody := `{"FirstName": "John", "Email": "johndoe@gmail.com", "Password": "password123", "Role": "user"}`
+
+	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
+
+	if recorder.Code != http.StatusBadRequest {
+		t.Errorf("Expected status code %d but got %d", http.StatusBadRequest, recorder.Code)
+	}
+
+	expected := `{"error":"Invalid request body: Key: 'UserRequest.LastName' Error:Field validation for 'LastName' failed on the 'required' tag"}`
+	if recorder.Body.String() != expected {
+		t.Errorf("Expected body %s but got %s", expected, recorder.Body.String())
+	}
+}
+
 
 func TestCreateUserWithoutPassword(t *testing.T) {
 	t.Log("Try to create an user without password")
 
 	router := UseRouter(t)
 
-	jsonBody := `{"Name": "John Doe", "Email": "johndoe@gmail.com", "Password": "", "Role": "user"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "Email": "johndoe@gmail.com", "Password": "", "Role": "user"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -90,7 +110,7 @@ func TestCreateUserWithoutPasswordMinLength(t *testing.T) {
 
 	router := UseRouter(t)
 
-	jsonBody := `{"Name": "John Doe", "Email": "johndoe@gmail.com", "Password": "short", "Role": "user"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "Email": "johndoe@gmail.com", "Password": "short", "Role": "user"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -109,7 +129,7 @@ func TestCreateUserWithoutRoles(t *testing.T) {
 
 	router := UseRouter(t)
 
-	jsonBody := `{"name": "John Doe", "email": "johndoe@gmail.com", "password": "myPassword"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "email": "johndoe@gmail.com", "password": "myPassword"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -123,7 +143,7 @@ func TestCreateUserWithAdminRole(t *testing.T) {
 
 	router := UseRouter(t)
 
-	jsonBody := `{"name": "John Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "admin"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "admin"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -137,7 +157,7 @@ func TestCreateUserWithUserRole(t *testing.T) {
 
 	router := UseRouter(t)
 
-	jsonBody := `{"name": "John Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "user"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "user"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -151,7 +171,7 @@ func TestCreateUserWithNonExistentRole(t *testing.T) {
 
 	router := UseRouter(t)
 
-	jsonBody := `{"name": "John Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "adminuser"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "adminuser"}`
 
 	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
 
@@ -167,7 +187,7 @@ func TestCreateUserWithNonExistentRole(t *testing.T) {
 func TestUpdateANotExistentUser(t *testing.T) {
 	router := UseRouter(t)
 
-	jsonBody := `{"name": "John Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "admin"}`
+	jsonBody := `{"FirstName": "John", "LastName": "Doe", "email": "johndoe@gmail.com", "password": "myPassword", "role": "admin"}`
 
 	recorder := PerformRequest(t, router, "PUT", "/users/johndoe@gmail.com", jsonBody)
 

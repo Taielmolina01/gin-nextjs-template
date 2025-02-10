@@ -3,9 +3,9 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	ownErrors "movie-reservation-system/errors"
-	"movie-reservation-system/models"
-	"movie-reservation-system/service/user"
+	userErrors 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/service"
 	"net/http"
 )
 
@@ -13,7 +13,7 @@ type UserController struct {
 	UserService user.UserService
 }
 
-func NewUserController(userService user.UserService) *UserController {
+func NewUserController(userService service.UserService) *UserController {
 	return &UserController{UserService: userService}
 }
 
@@ -72,7 +72,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) {
 	user, err := uc.UserService.UpdateUser(email, &request)
 
 	if err != nil {
-		if errors.Is(err, ownErrors.ErrorUserNotExist{Email: email}) {
+		if errors.Is(err, userErrors.ErrorUserNotExist{Email: email}) {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
@@ -103,7 +103,7 @@ func (uc *UserController) UpdateUserPassword(ctx *gin.Context) {
 	user, err := uc.UserService.UpdateUserPassword(email, &request)
 
 	if err != nil {
-		if errors.Is(err, ownErrors.ErrorUserNotExist{Email: email}) {
+		if errors.Is(err, userErrors.ErrorUserNotExist{Email: email}) {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})

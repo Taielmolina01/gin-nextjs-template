@@ -6,7 +6,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"movie-reservation-system/initializers"
-	"movie-reservation-system/models"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/application"
 	"net/http"
 	"net/http/httptest"
 	"bytes"
@@ -21,7 +21,7 @@ func setUpRouterTest() (*gin.Engine, error) {
 		return nil, fmt.Errorf("Error connecting to mock database: %w", err)
 	}
 
-	tables := models.GetAllModels()
+	tables := application.GetAllModels()
 	for _, t := range tables {
 		err = db.AutoMigrate(t)
 		if err != nil {
@@ -29,25 +29,25 @@ func setUpRouterTest() (*gin.Engine, error) {
 		}
 	}
 
-	config := configuration.LoadConfigTest("3000", "host=localhost user=postgres password=taiel0101 port=5432 sslmode=disable dbname=movie-system-db", "HS256", "ASDADASD")
+	config := application.LoadConfigTest("3000", "host=localhost user=postgres password=taiel0101 port=5432 sslmode=disable dbname=movie-system-db", "HS256", "ASDADASD")
 
-	router := initializers.Init(db, config)
+	engine := application.CreateTestEngine(db, config)
 
 	gin.SetMode(gin.ReleaseMode)
 
-	return router, nil
+	return engine, nil
 }
 
 func UseRouter(t *testing.T) *gin.Engine {
-	router, err := setUpRouterTest()
+	engine, err := setUpRouterTest()
 
 	if err != nil {
-		t.Fatalf("Error setting up test router: %v", err)
+		t.Fatalf("Error setting up test engine: %v", err)
 	}
-	return router
+	return engine
 }
 
-func PerformRequest(t *testing.T, router *gin.Engine, method, path, body string) *httptest.ResponseRecorder {
+func PerformRequest(t *testing.T, engine *gin.Engine, method, path, body string) *httptest.ResponseRecorder {
 	var req *http.Request
 	var err error
 
@@ -63,14 +63,14 @@ func PerformRequest(t *testing.T, router *gin.Engine, method, path, body string)
 
 	req.Header.Set("Content-Type", "application/json")
 	recorder := httptest.NewRecorder()
-	router.ServeHTTP(recorder, req)
+	engine.ServeHTTP(recorder, req)
 
 	return recorder
 }
 
-func PerformRequestWithRequest(t *testing.T, router *gin.Engine, req *http.Request) *httptest.ResponseRecorder {
+func PerformRequestWithRequest(t *testing.T, engine *gin.Engine, req *http.Request) *httptest.ResponseRecorder {
     recorder := httptest.NewRecorder()
-    router.ServeHTTP(recorder, req)
+    engine.ServeHTTP(recorder, req)
     return recorder
 }
 
@@ -86,16 +86,17 @@ func GetAccessToken(recorder *httptest.ResponseRecorder) (string, error) {
 }
 
 type UserLoginData struct {
-	Name	string
+	FirstName	string
+	LastName	string
 	Email	string
 	Password	string
 	Role	string
 }
 
-func CreateUserAndLogin(userData UserLoginData, t *testing.T, router *gin.Engine) string {
-	jsonBody := fmt.Sprintf(`{"name": "%s", "email": "%s", "password": "%s", "role": "%s"}`, userData.Name, userData.Email, userData.Password, userData.Role)
+func CreateUserAndLogin(userData UserLoginData, t *testing.T, engine *gin.Engine) string {
+	jsonBody := fmt.Sprintf(`{"firstname": "%s", "lastname": "%s, "email": "%s", "password": "%s", "role": "%s"}`, userData.FirstName, userData.LastName, userData.Email, userData.Password, userData.Role)
 
-	recorder := PerformRequest(t, router, "POST", "/users", jsonBody)
+	recorder := PerformRequest(t, engine, "POST", "/users", jsonBody)
 
 	if recorder.Code != http.StatusCreated {
 		t.Errorf("Expected status code %d but got %d", http.StatusOK, recorder.Code)
@@ -103,7 +104,7 @@ func CreateUserAndLogin(userData UserLoginData, t *testing.T, router *gin.Engine
 
 	secondJsonBody := fmt.Sprintf(`{"email": "%s", "password": "%s"}`, userData.Email, userData.Password)
 
-	secondRecorder := PerformRequest(t, router, "POST", "/login", secondJsonBody)
+	secondRecorder := PerformRequest(t, engine, "POST", "/login", secondJsonBody)
 
 	if secondRecorder.Code != http.StatusOK {
 		t.Errorf("Expected status code %d but got %d", http.StatusOK, secondRecorder.Code)

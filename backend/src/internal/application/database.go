@@ -5,8 +5,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"movie-reservation-system/models"
-	"movie-reservation-system/configuration"
 )
 
 var db *gorm.DB
@@ -21,7 +19,7 @@ const (
 	DATABASE_NAME                   = "movie_reservation_system_db"
 )
 
-func ConnectDB(config *configuration.Configuration) (*gorm.DB, error) {
+func ConnectDB(config *Configuration) (*gorm.DB, error) {
 	dsn := config.DbDsn + " dbname=postgres"
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -38,7 +36,7 @@ func ConnectDB(config *configuration.Configuration) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	tables := models.GetAllModels()
+	tables := GetAllModels()
 
 	for _, t := range tables {
 		err = db.AutoMigrate(t)

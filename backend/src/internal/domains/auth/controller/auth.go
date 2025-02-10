@@ -3,17 +3,17 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	ownErrors "movie-reservation-system/errors"
-	"movie-reservation-system/models"
-	"movie-reservation-system/service/auth"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
 	"net/http"
 )
 
 type AuthController struct {
-	AuthService auth.AuthService
+	AuthService service.AuthService
 }
 
-func NewAuthController(authService auth.AuthService) *AuthController {
+func NewAuthController(authService service.AuthService) *AuthController {
 	return &AuthController{AuthService: authService}
 }
 
@@ -30,7 +30,7 @@ func (ac *AuthController) Login(ctx *gin.Context) {
 	token, err := ac.AuthService.Login(&request)
 
 	if err != nil {
-		if errors.Is(err, ownErrors.ErrorUserNotExist{Email: request.Email}) {
+		if errors.Is(err, userErrors.ErrorUserNotExist{Email: request.Email}) {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
@@ -53,11 +53,11 @@ func (ac *AuthController) Logout(ctx *gin.Context) {
 	token, err := ac.AuthService.Logout(email)
 
 	if err != nil {
-		if errors.Is(err, ownErrors.ErrorUserNotExist{Email: email}) {
+		if errors.Is(err, userErrors.ErrorUserNotExist{Email: email}) {
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": err.Error(),
 			})
-		} else if errors.Is(err, ownErrors.ErrorUserTokenNotExist{UserEmail: email}) {
+		} else if errors.Is(err, userErrors.ErrorUserTokenNotExist{UserEmail: email}) {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"error": err.Error(),
 			})
