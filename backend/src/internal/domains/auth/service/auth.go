@@ -3,20 +3,18 @@ package service
 import (
 	"encoding/base64"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"log"
 	"math/rand"
-	ownErrors "movie-reservation-system/errors"
-	"movie-reservation-system/models"
-	authRepository "movie-reservation-system/repository/auth"
-	userRepository "movie-reservation-system/repository/user"
-	"movie-reservation-system/service"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
+	authErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/errors"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
+	userRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/utils"
 	"time"
 )
 
 type AuthServiceImpl struct {
 	userRepository userRepository.UserRepository
-	authRepository authRepository.AuthRepository
 }
 
 var signingMethod jwt.SigningMethod
@@ -49,24 +47,15 @@ func NewAuthService(authRepository authRepository.AuthRepository, userRepository
 	}
 }
 
-func mapTokenRequestToTokenDB(token, refreshToken, userEmail string, expiresAt time.Time) *models.TokenDB {
-	return &models.TokenDB{
-		ID:           uuid.New(),
-		AccessToken:  token,
-		RefreshToken: refreshToken,
-		UserEmail:    userEmail,
-		ExpiresAt:    expiresAt,
-	}
-}
 
-func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.TokenDB, error) {
+func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLoginResponse, error) {
 	user, err := aui.userRepository.GetUser(req.Email)
 	if err != nil {
-		return nil, ownErrors.ErrorUserNotExist{Email: req.Email}
+		return "", ownErrors.ErrorUserNotExist{Email: req.Email}
 	}
 
-	if !service.ValidatePassword(user.Password, req.Password) {
-		return nil, ownErrors.ErrorWrongOldPassword{}
+	if !utils.ValidatePassword(user.Password, req.Password) {
+		return "", ownErrors.ErrorWrongOldPassword{}
 	}
 
 	expiresAt := time.Now().Add(time.Hour * expiresHours)
@@ -79,33 +68,30 @@ func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.TokenDB
 	token := jwt.NewWithClaims(signingMethod, claims)
 	signedToken, err := token.SignedString(secretKey)
 	if err != nil {
-		return nil, ownErrors.ErrorSigningToken{TypeError: err}
+		return "", ownErrors.ErrorSigningToken{TypeError: err}
 	}
 
-	refreshToken, err := generateRefreshToken()
-	if err != nil {
-		return nil, ownErrors.ErrorGeneratingRefreshToken{TypeError: err}
-	}
+	refreshtoken := 
 
-	tokenDB := mapTokenRequestToTokenDB(signedToken, refreshToken, user.Email, expiresAt)
+	response := MapUserDBToLoginResponse(user, signedToken, refreshtoken)
 
-	return aui.authRepository.CreateToken(tokenDB)
+	return response, nil
 }
 
-func (aui *AuthServiceImpl) Logout(userEmail string) (*models.TokenDB, error) {
+func (aui *AuthServiceImpl) Logout(userEmail string) (string, error) {
 	_, err := aui.userRepository.GetUser(userEmail)
 
 	if err != nil {
-		return nil, ownErrors.ErrorUserNotExist{Email: userEmail}
+		return "", ownErrors.ErrorUserNotExist{Email: userEmail}
 	}
 
 	token, err := aui.authRepository.GetToken(userEmail)
 
 	if err != nil {
-		return nil, ownErrors.ErrorUserTokenNotExist{UserEmail: userEmail}
+		return "", ownErrors.ErrorUserTokenNotExist{UserEmail: userEmail}
 	}
 
-	return aui.authRepository.DeleteToken(token)
+	return "user logged succesfully", nil
 }
 
 func generateRefreshToken() (string, error) {

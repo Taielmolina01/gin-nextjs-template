@@ -3,10 +3,10 @@ package service
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
-	ownErrors "movie-reservation-system/errors"
-	"movie-reservation-system/models"
-	"movie-reservation-system/repository/user"
-	"movie-reservation-system/service"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
+	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/utils"
+	userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 )
 
 type UserServiceImpl struct {
@@ -17,15 +17,6 @@ func NewUserServiceImpl(userRepository repository.UserRepository) UserService {
 	return &UserServiceImpl{UserRepository: userRepository}
 }
 
-func mapUserRequestToUserDB(req *models.UserRequest) *models.UserDB {
-	return &models.UserDB{
-		Email:    req.Email,
-		Name:     req.Name,
-		Password: req.Password,
-		Role:     req.Role,
-	}
-}
-
 func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserDB, error) {
 
 	if req.Role == "" {
@@ -33,14 +24,14 @@ func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserDB, 
 	}
 
 	// Validate fields of request
-	if err := service.ValidateUserFields(req); err != nil {
+	if err := utils.ValidateUserFields(req); err != nil {
 		return nil, err
 	}
 
 	// Call to the db to validate that the user doesnt already exist
 	_, userError := us.GetUser(req.Email)
 
-	var userNotExistErr ownErrors.ErrorUserNotExist
+	var userNotExistErr userErrors.ErrorUserNotExist
 	if userError != nil && !errors.As(userError, &userNotExistErr) {
 		return nil, userError
 	}
@@ -49,12 +40,12 @@ func (us *UserServiceImpl) CreateUser(req *models.UserRequest) (*models.UserDB, 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 10)
 
 	if err != nil {
-		return nil, ownErrors.ErrorEncriptyngPassword{}
+		return nil, userErrors.ErrorEncriptyngPassword{}
 	}
 
 	req.Password = string(hashedPassword)
 
-	newUser := mapUserRequestToUserDB(req)
+	newUser := utils.MapUserRequestToUserDB(req)
 
 	// Save user in the db
 	return us.UserRepository.CreateUser(newUser)
@@ -70,10 +61,10 @@ func (us *UserServiceImpl) UpdateUser(email string, req *models.UserUpdateReques
 	user, err := us.GetUser(email)
 
 	if err != nil {
-		return nil, ownErrors.ErrorUserNotExist{Email: email}
+		return nil, userErrors.ErrorUserNotExist{Email: email}
 	}
 
-	if err := service.ValidateAndUpdateUser(req, user); err != nil {
+	if err := utils.ValidateAndUpdateUser(req, user); err != nil {
 		return nil, err
 	}
 
@@ -86,16 +77,16 @@ func (us *UserServiceImpl) UpdateUserPassword(email string, req *models.UserUpda
 	user, err := us.GetUser(email)
 
 	if err != nil {
-		return nil, ownErrors.ErrorUserNotExist{Email: email}
+		return nil, userErrors.ErrorUserNotExist{Email: email}
 	}
 
 	// Validate password fields
-	if !service.ValidatePassword(user.Password, req.OldPassword) {
-		return nil, ownErrors.ErrorWrongOldPassword{}
+	if !utils.ValidatePassword(user.Password, req.OldPassword) {
+		return nil, userErrors.ErrorWrongOldPassword{}
 	}
 
 	if len(req.NewPassword) < 8 {
-		return nil, ownErrors.ErrorPasswordMustHaveLenght8{}
+		return nil, userErrors.ErrorPasswordMustHaveLenght8{}
 	}
 
 	// Update password
@@ -110,7 +101,7 @@ func (us *UserServiceImpl) DeleteUser(email string) (*models.UserDB, error) {
 	user, err := us.GetUser(email)
 
 	if err != nil {
-		return nil, ownErrors.ErrorUserNotExist{email}
+		return nil, userErrors.ErrorUserNotExist{email}
 	}
 
 	// Delete user from the db

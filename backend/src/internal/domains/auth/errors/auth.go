@@ -19,11 +19,3 @@ type ErrorSigningToken struct {
 func (e ErrorSigningToken) Error() string {
 	return fmt.Sprintf("Error signing token: %w", e.TypeError)
 }
-
-type ErrorGeneratingRefreshToken struct {
-	TypeError error
-}
-
-func (e ErrorGeneratingRefreshToken) Error() string {
-	return fmt.Sprintf("Error generating refresh token: %w", e.TypeError)
-}
