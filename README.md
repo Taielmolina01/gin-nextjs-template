@@ -1,6 +1,8 @@
 # gin-nextjs-template
 
-| Imagen 1 | Imagen 2 |
-|----------|----------|
-| ![Go](https://github.com/Taielmolina01/gin-nextjs-template/blob/main/.github/go.png) | ![Gin](https://github.com/Taielmolina01/gin-nextjs-template/blob/main/.github/gin.png) |
+<p align="center">
+  <img src="https://github.com/Taielmolina01/gin-nextjs-template/blob/main/.github/go.png" width="200" />
+  <img src="https://github.com/Taielmolina01/gin-nextjs-template/blob/main/.github/gin.png" width="200" />
+</p>
+
 This is a template using **Gin** + **PostgresSQL** + **Gorm** + **NextJS** (really TS indeed)
