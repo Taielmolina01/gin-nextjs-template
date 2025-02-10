@@ -4,8 +4,8 @@ import (
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/models"
 )
 
-func MapUserDBToLoginResponse(user *models.UserDB, token string) *models.UserLoginResponse {
-	return &models.UserLoginResponse{
+func MapUserDBToLogResponse(user *models.UserDB, token string) *models.UserLogResponse {
+	return &models.UserLogResponse{
 		Email: user.Email,
 		FirstName: user.FirstName,
 		LastName: user.LastName,

@@ -29,7 +29,7 @@ type UserLoginRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
-type UserLoginResponse struct {
+type UserLogResponse struct {
 	Email    string `json:"email"`
 	FirstName string `json:"firstname"`	
 	LastName  string `json:"lastname"`
@@ -39,7 +39,8 @@ type UserLoginResponse struct {
 }
 
 type UserUpdateRequest struct {
-	Name *string `json:"name" binding:"omitempty"`
+	FirstName *string `json:"firstname" binding:"omitempty"`
+	LastName *string `json:"lastname" binding:"omitempty"`
 	Role *Role   `json:"role" binding:"omitempty,oneof=user admin"`
 }
 

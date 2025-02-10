@@ -39,7 +39,7 @@ func ValidateUserFields(req *models.UserRequest) error {
 	}
 
 	if req.LastName == "" {
-		return errrors.ErrorUserMustHaveLastName{}
+		return errors.ErrorUserMustHaveLastName{}
 	}
 
 	if len(req.Password) < 8 {

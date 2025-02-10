@@ -15,26 +15,17 @@ func CreateRepositoryImpl(db *gorm.DB) UserRepository {
 	return &UserRepositoryImpl{db: db}
 }
 
-func mapUserDBToUserCRUDResponse(user *models.UserDB) *models.UserCRUDResponse {
-	return &models.UserCRUDResponse{
-		Email: user.Email,
-		FirstName: user.FirstName,
-		LastName: user.LastName,
-		Role: user.Role,
-	}
-}
-
-func (ur *UserRepositoryImpl) CreateUser(user *models.UserDB) (*models.UserCRUDResponse, error) {
+func (ur *UserRepositoryImpl) CreateUser(user *models.UserDB) (*models.UserDB, error) {
 	result := ur.db.Create(user)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return mapUserDBToUserCRUDResponse(user), nil
+	return user, nil
 }
 
-func (ur *UserRepositoryImpl) GetUser(email string) (*models.UserCRUDResponse, error) {
+func (ur *UserRepositoryImpl) GetUser(email string) (*models.UserDB, error) {
 	user := &models.UserDB{}
 
 	result := ur.db.First(user, "email = ?", email)
@@ -47,25 +38,25 @@ func (ur *UserRepositoryImpl) GetUser(email string) (*models.UserCRUDResponse, e
 		return nil, result.Error
 	}
 
-	return mapUserDBToUserCRUDResponse(user), nil
+	return user, nil
 }
 
-func (ur *UserRepositoryImpl) UpdateUser(user *models.UserDB) (*models.UserCRUDResponse, error) {
+func (ur *UserRepositoryImpl) UpdateUser(user *models.UserDB) (*models.UserDB, error) {
 	result := ur.db.Save(user)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return mapUserDBToUserCRUDResponse(user), nil
+	return user, nil
 }
 
-func (ur *UserRepositoryImpl) DeleteUser(user *models.UserDB) (*models.UserCRUDResponse, error) {
+func (ur *UserRepositoryImpl) DeleteUser(user *models.UserDB) (*models.UserDB, error) {
 	result := ur.db.Delete(user)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return mapUserDBToUserCRUDResponse(user), nil
+	return user, nil
 }

@@ -9,9 +9,16 @@ import (
     "fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
-	"github.com/Taielmolina01/gin-nextjs-template/src/internal/application"
     userErrors "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/errors"
 )
+
+type authMiddleware struct {
+    JWTSecretKey string
+}
+
+func NewAuthMiddleware(secretKey string) *AuthMiddleware {
+    return &authMiddleware{JWTSecretKey: secretKey}
+}
 
 func commonAuthMiddleware(db *gorm.DB) gin.HandlerFunc {
     return func(c *gin.Context) {
@@ -101,7 +108,7 @@ func AdminAuthMiddleware(db *gorm.DB) gin.HandlerFunc {
 
 func verifyToken(tokenString string) (jwt.MapClaims, error) {
     signingMethod := auth.GetSigningMethod()
-    secretKey := []byte(application.GetConfiguration().JwtSecretKey)
+    secretKey := []byte(authMiddleware.JwtSecretKey)
 
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         if token.Method != signingMethod {

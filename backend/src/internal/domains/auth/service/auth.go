@@ -39,17 +39,16 @@ func GetSigningMethod() jwt.SigningMethod {
 	return signingMethod
 }
 
-func NewAuthService(authRepository authRepository.AuthRepository, userRepository userRepository.UserRepository, algorithm, secretKey string) AuthService {
+func NewAuthService(userRepository userRepository.UserRepository, algorithm, secretKey string) AuthService {
 	chooseSigningMethod(algorithm, secretKey)
 
 	return &AuthServiceImpl{
 		userRepository: userRepository,
-		authRepository: authRepository,
 	}
 }
 
 
-func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLoginResponse, error) {
+func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLogResponse, error) {
 	user, err := aui.userRepository.GetUser(req.Email)
 	if err != nil {
 		return "", userErrors.ErrorUserNotExist{Email: req.Email}
@@ -78,33 +77,24 @@ func (aui *AuthServiceImpl) Login(req *models.UserLoginRequest) (*models.UserLog
 		return nil, authErrors.ErrorGeneratingRefreshToken
 	}
 
-	response := authUtils.MapUserDBToLoginResponse(user, signedToken, refreshtoken)
+	response := authUtils.MapUserDBToLogResponse(user, signedToken, refreshtoken)
 
 	return response, nil
 }
 
-func (aui *AuthServiceImpl) Logout(userEmail string) (string, error) {
-	_, err := aui.userRepository.GetUser(userEmail)
+func (aui *AuthServiceImpl) Logout(userEmail string) (UserLogResponse, error) {
+	user, err := aui.userRepository.GetUser(userEmail)
 
 	if err != nil {
 		return "", userErrors.ErrorUserNotExist{Email: userEmail}
 	}
-
-    refreshToken := c.Request.Header.Get("Authorization")
 
     if refreshToken == "" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
         return
     }
 
-    // Delete or blacklist refresh token (if stored in DB)
-    err := aui.tokenRepository.DeleteRefreshToken(refreshToken)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to revoke token"})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+	return MapUserDBToLogResponse(user), nil
 }
 
 func generateRefreshToken() (string, error) {

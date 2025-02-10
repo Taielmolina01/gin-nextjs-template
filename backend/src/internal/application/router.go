@@ -8,7 +8,6 @@ import (
 	"log"
 	authController "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/controller"
 	userController "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/controller"
-	authRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/repository"
 	userRepository "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/repository"
 	authService "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/auth/service"
 	userService "github.com/Taielmolina01/gin-nextjs-template/src/internal/domains/users/service"
@@ -35,6 +34,8 @@ func CreateRouter(port string) *Router {
 	store, err := postgres.NewStore(db, []byte(config.secretKey))
 
 	engine.Use(sessions.Sessions("session", store))
+
+	middlewares.NewAuthMiddleware(config.JWTSecretKey)
 
 	createEndPoints(db)
 
@@ -70,9 +71,7 @@ func setUpUserLayers(db *gorm.DB) (*userController.UserController, userRepositor
 }
 
 func setUpAuthLayers(db *gorm.DB, userRepo userRepository.UserRepository, config *Configuration) *authController.AuthController {
-	authRepo := authRepository.NewAuthRepositoryImpl(db)
-
-	authService := authService.NewAuthService(authRepo, userRepo, config.JwtAlgorithm, config.JwtSecretKey)
+	authService := authService.NewAuthService(userRepo, config.JwtAlgorithm, config.JwtSecretKey)
 
 	authController := authController.NewAuthController(authService)
 

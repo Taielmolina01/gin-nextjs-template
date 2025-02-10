@@ -23,5 +23,5 @@ func (e ErrorSigningToken) Error() string {
 type ErrorGeneratingRefreshToken struct {}
 
 func (e ErrorGeneratingRefreshToken) Error() string {
-	return fmt.Println("Error generating the refresh token")
+	return "Error generating the refresh token"
 }

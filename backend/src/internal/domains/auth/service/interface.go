@@ -5,7 +5,7 @@ import (
 )
 
 type AuthService interface {
-	Login(*models.UserLoginRequest) (*models.UserLoginResponse, error)
+	Login(*models.UserLoginRequest) (*models.UserLogResponse, error)
 
-	Logout(string) (*models.TokenDB, error)
+	Logout(string) (*models.UserLogResponse, error)
 }
