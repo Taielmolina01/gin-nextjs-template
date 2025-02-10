@@ -5,4 +5,10 @@
   <img src="https://github.com/Taielmolina01/gin-nextjs-template/blob/main/.github/gin.png" width="200" />
 </p>
 
-This is a template using **Gin** + **PostgresSQL** + **Gorm** + **NextJS** (really TS indeed)
+This is a template using **Gin** + **PostgresSQL** (with Gorm) + **NextJS** (really TS indeed)
+
+## Features
+
+- Users management
+- JWT Authentication (with admind & user roles)
+- Dashboard to see all users
