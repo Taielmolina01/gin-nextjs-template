@@ -4,7 +4,7 @@ import Link from 'next/link'
 export default function Register() {
 
     return (
-        <main className="flex min-h-screen min-w-screen font-sans">
+        <main className="flex h-full w-full font-sans">
             <section className="flex flex-col justify-start w-1/2 min-w-[50vw] bg-gradient-to-b from-purple-900 to-black p-10">
                 <div className="mx-auto my-[70px] w-[70%] justify-center">
                     <h1 className="text-2xl my-[10px] text-start font-bold">
@@ -40,7 +40,6 @@ export default function Register() {
                     </span>
                 </div>
             </section>
-            </main>
-
+        </main>
     );
 }
