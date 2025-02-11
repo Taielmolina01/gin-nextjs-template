@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden h-screen`}
       >
-        <nav className="flex justify-between flex-row w-full items-center border-b-[0.5px] border-gray-900 px-4 py-2">
+        <nav className="flex justify-between flex-row w-full items-center border-b-[0.5px] border-gray-700 px-4 py-2">
           <Link href="/">
             Gin + NextJS Template
           </Link>

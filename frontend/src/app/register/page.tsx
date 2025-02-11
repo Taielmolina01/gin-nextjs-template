@@ -24,17 +24,17 @@ export default function Register() {
                         Sign up to the Gin + NextJS template
                     </h1>
                     <form className="flex flex-col py-3">
-                        <FormInput label="First name" type="text" />
-                        <FormInput label="Last name" type="text" />
-                        <FormInput label="Email" type="email" />
-                        <FormInput label="Password" type="password" help="Password must have at least 8 characters" />
+                        <FormInput label="First name" type="text" fontColor="text-gray-800"/>
+                        <FormInput label="Last name" type="text" fontColor="text-gray-800"/>
+                        <FormInput label="Email" type="email" fontColor="text-gray-800"/>
+                        <FormInput label="Password" type="password" help="Password must have at least 8 characters" fontColor="text-gray-800" />
                         <button className="bg-black text-white py-2 my-2 rounded-md" type="submit">
                             Continue >
                         </button>
                     </form>
                     <span>
                         Already have an account?  
-                        <Link href="/login" className="text-purple-900 underline underline-offset-2">
+                        <Link href="/login" className="ml-1 text-purple-900 underline underline-offset-2">
                             Login
                         </Link>
                     </span>

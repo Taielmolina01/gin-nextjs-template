@@ -9,8 +9,8 @@ export default function Login() {
                         Login to the Gin + NextJS template
                     </h1>
                     <form className="flex flex-col py-3">
-                        <FormInput label="Email" type="email" />
-                        <FormInput label="Password" type="password" />
+                        <FormInput label="Email" type="email" fontColor="text-gray-200"/>
+                        <FormInput label="Password" type="password" fontColor="text-gray-200"/>
                         <button className="bg-black border-[1px] border-gray-500 text-white py-2 my-2 rounded-md" type="submit">
                             Continue >
                         </button>

@@ -3,13 +3,14 @@ import React from "react";
 interface FormInputProps {
   label: string;
   type: string;
+  fontColor: string;
   help?: string;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ label, type, help }) => {
+const FormInput: React.FC<FormInputProps> = ({ label, type, fontColor, help }) => {
   return (
     <div className="flex flex-col my-1 gap-1">
-        <label className="text-gray-800">
+        <label className={`${fontColor}`}>
             {label} <span className="text-red-500">*</span>
         </label>
         <input
